@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+        <meta content="utf-8" http-equiv="encoding">
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script src="scripts/papaparse.min.js"></script>
+        <script src="scripts/functions.js"></script>
+    </head>
+    <body>
+        <div style="display: inline-block;">
+            <div style="float: left;">
+                <div id="chart" style="margin: 0 auto;"></div>
+            </div>
+        </div>
+
+        <script>
+            var loadedData;
+            d3.text('data/ratingHistory.csv')
+                .then(text => d3.csvParse(text))
+                .then(fullData => {
+                    loadedData = fullData;
+
+                    plotYearCohort(2011);
+                });
+
+            function plotYearCohort(year){
+                var fullDataForYear = getDataForYear(year);
+
+                var uniqueIds = [...new Set(fullDataForYear.filter(row => row.RatingPoints == 1).map(row => row.fkMemberID))];
+
+                year += 1;
+
+                while(year < 2019)
+                {
+                    var yearData = getDataForYear(year).filter(row => uniqueIds.includes(row.fkMemberID));
+                    doHistogram(yearData, "chart", "Point Distribution for " + year, 25);
+                    year++;
+                }
+            }
+
+            function getDataForYear(year) {
+                return loadedData.filter(row => row.Season.startsWith(year) && row.RatingPoints != 0) 
+            }
+        </script>
+    </body>
+</html>

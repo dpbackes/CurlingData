@@ -1,4 +1,4 @@
-function doHistogram(data, divId, title) {
+function doHistogram(data, divId, title, yMax) {
     var margin = {top: 10, right: 30, bottom: 40, left: 40},
         width = 460 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
@@ -27,7 +27,7 @@ function doHistogram(data, divId, title) {
 
     var y = d3.scaleLinear()
         .range([height, 0]);
-        y.domain([0, 140]);
+        y.domain([0, yMax || 140]);
 
     svg.append("text")
         .attr("x", (width / 2))             
