@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <script src="scripts/plotly.min.js"></script>
+        <script src="scripts/papaparse.min.js"></script>
+    </head>
+    <body>
+        <div id="chartDiv"> </div>
+        <script>
+            // var x = [];
+            // for (var i = 0; i < 500; i ++) {
+            //     x[i] = Math.random();
+            // }
+
+            // var trace = {
+            //     x: x,
+            //     type: 'histogram',
+            // };
+            // var data = [trace];
+            // Plotly.newPlot('chartDiv', data);
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    Papa.parse(xhr.responseText, {
+                        header: true,
+                        dynamicTyping: true,
+                        delimiter: ",",
+                        complete: function(results) {
+                            data = results;
+                            var filteredResults = results.data.filter(row => row.Season.startsWith('2010')).map(row => row.RatingPoints);
+
+
+                            var trace = {
+                                x: filteredResults,
+                                type: 'histogram',
+                            };
+                            var data = [trace];
+                            Plotly.newPlot('chartDiv', data);
+                        }
+                    });
+                }
+            };
+            xhr.open("GET", 'data/ratingHistory.csv');
+            xhr.send();
+        </script>
+    </body>
+</html>
