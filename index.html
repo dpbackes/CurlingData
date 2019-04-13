@@ -7,10 +7,17 @@
         <script src="scripts/functions.js"></script>
     </head>
     <body>
-        <div style="width: 500px; margin: auto">
-            <div id="chart" style="margin: 0 auto; width: auto"></div>
-            <div id="statsDiv" style="font-family: Courier New; margin: 15"></div>
-            <div style="margin: 15 0; display: block; width: auto; text-align: center;">
+        <div style="display: inline-block;">
+            <div style="float: left;">
+                <div id="statsDiv" style="font-family: Courier New; margin: 30;"></div>
+            </div>
+
+            <div style="float: left;">
+                <div id="chart" style="margin: 0 auto;"></div>
+            </div>
+
+            <div style="margin: 15 0; width: auto; text-align: center; display: block;">
+                Pick a year to display:<br>
                 <a href="#" onmouseover="handleMouseover('2010')" id="link2010">2010</a>
                 <a href="#" onmouseover="handleMouseover('2011')" id="link2011">2011</a>
                 <a href="#" onmouseover="handleMouseover('2012')" id="link2012">2012</a>
@@ -22,6 +29,7 @@
                 <a href="#" onmouseover="handleMouseover('2018')" id="link2018">2018</a> 
             </div>
         </div>
+
         
         <script>
             var loadedData;
@@ -37,13 +45,19 @@
                 doHistogram(getDataForYear(year), "chart", "Point Distribution for " + year)
 
                 var yearData = getYearStats(year);
-                document.getElementById("statsDiv").innerHTML = ("                  Median points: " + yearData.median.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" +
-                                                                ("                 Average points: " + yearData.averagePoints.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" + 
+                document.getElementById("statsDiv").innerHTML = ("          Median points: " + yearData.median.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" +
+                                                                ("         Average points: " + yearData.averagePoints.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" + 
+                                                                "<br>" +
+                                                                ("         First Quartile: " + yearData.firstQuartile.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" + 
+                                                                ("        Second Quartile: " + yearData.secondQuartile.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" + 
+                                                                ("         Third Quartile: " + yearData.thirdQuartile.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" + 
                                                                 "<br>" +
                                                                 "<br>" +
-                                                                ("   Percent five points or under: " + yearData.fivePointPercent.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" +
-                                                                ("    Percent ten points or under: " + yearData.tenPointPercent.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" +
-                                                                ("Percent fifteen points or under: " + yearData.fifteenPointPercent.toFixed(2)).replace(/ /g, '&nbsp;');
+                                                                "Percentage of curlers who are:" + "<br>" +
+                                                                "<br>" +
+                                                                ("   Five points or under: " + yearData.fivePointPercent.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" +
+                                                                ("    Ten points or under: " + yearData.tenPointPercent.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" +
+                                                                ("Fifteen points or under: " + yearData.fifteenPointPercent.toFixed(2)).replace(/ /g, '&nbsp;');
 
             }
 
@@ -60,7 +74,13 @@
 
                 var fifteenPointPercent = yearData.filter(row => row.RatingPoints <= 15).length / yearData.length
 
-                const totalPoints = yearData.map(data => +data.RatingPoints).reduce((acc, c) => acc + c, 0);
+                var pointValues = yearData.map(data => +data.RatingPoints).sort(function(a, b){return a-b});
+
+                var firstQuartile = d3.quantile(pointValues, 0.25);
+                var secondQuartile = d3.quantile(pointValues, 0.5);
+                var thirdQuartile = d3.quantile(pointValues, 0.75);
+
+                const totalPoints = pointValues.reduce((acc, c) => acc + c, 0);
                 var averagePoints = totalPoints / yearData.length;
 
                 var median = d3.median(yearData.map(data => data.RatingPoints));
@@ -70,7 +90,10 @@
                     tenPointPercent,
                     fifteenPointPercent,
                     averagePoints,
-                    median
+                    median,
+                    firstQuartile,
+                    secondQuartile,
+                    thirdQuartile
                 }
             }
 

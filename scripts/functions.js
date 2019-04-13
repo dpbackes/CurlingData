@@ -29,8 +29,6 @@ function doHistogram(data, divId, title) {
         .range([height, 0]);
         y.domain([0, 140]);
 
-    d3.select("#"+divId).attr("align","center");
-
     svg.append("text")
         .attr("x", (width / 2))             
         .attr("y", 0 - (margin.top / 2) + 10)
