@@ -9,6 +9,7 @@
     <body>
         <div style="width: 500px; margin: auto">
             <div id="chart" style="margin: 0 auto; width: auto"></div>
+            <div id="statsDiv" style="font-family: Courier New; margin: 15"></div>
             <div style="margin: 15 0; display: block; width: auto; text-align: center;">
                 <a href="#" onmouseover="handleMouseover('2010')" id="link2010">2010</a>
                 <a href="#" onmouseover="handleMouseover('2011')" id="link2011">2011</a>
@@ -21,25 +22,58 @@
                 <a href="#" onmouseover="handleMouseover('2018')" id="link2018">2018</a> 
             </div>
         </div>
-
-
+        
         <script>
             var loadedData;
             d3.text('data/ratingHistory.csv')
                 .then(text => d3.csvParse(text))
                 .then(fullData => {
                     loadedData = fullData;
-                    doHistogram(getDataForYear("2010"), "chart", "Point Distribution for 2010");
+                    handleMouseover("2010");
                 });
 
-            function handleMouseover(element){
+            function handleMouseover(year) {
                 document.getElementById("chart").innerHTML = "";
-                doHistogram(getDataForYear(element), "chart", "Point Distribution for " + element)
+                doHistogram(getDataForYear(year), "chart", "Point Distribution for " + year)
+
+                var yearData = getYearStats(year);
+                document.getElementById("statsDiv").innerHTML = ("                  Median points: " + yearData.median.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" +
+                                                                ("                 Average points: " + yearData.averagePoints.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" + 
+                                                                "<br>" +
+                                                                "<br>" +
+                                                                ("   Percent five points or under: " + yearData.fivePointPercent.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" +
+                                                                ("    Percent ten points or under: " + yearData.tenPointPercent.toFixed(2)).replace(/ /g, '&nbsp;') + "<br>" +
+                                                                ("Percent fifteen points or under: " + yearData.fifteenPointPercent.toFixed(2)).replace(/ /g, '&nbsp;');
+
             }
 
-            function getDataForYear(year){
+            function getDataForYear(year) {
                 return loadedData.filter(row => row.Season.startsWith(year) && row.RatingPoints != 0) 
             }
+
+            function getYearStats(year) {
+                var yearData = getDataForYear(year);
+
+                var fivePointPercent = yearData.filter(row => row.RatingPoints <= 5).length / yearData.length
+
+                var tenPointPercent = yearData.filter(row => row.RatingPoints <= 10).length / yearData.length;
+
+                var fifteenPointPercent = yearData.filter(row => row.RatingPoints <= 15).length / yearData.length
+
+                const totalPoints = yearData.map(data => +data.RatingPoints).reduce((acc, c) => acc + c, 0);
+                var averagePoints = totalPoints / yearData.length;
+
+                var median = d3.median(yearData.map(data => data.RatingPoints));
+
+                return {
+                    fivePointPercent,
+                    tenPointPercent,
+                    fifteenPointPercent,
+                    averagePoints,
+                    median
+                }
+            }
+
         </script>
     </body>
 </html>
