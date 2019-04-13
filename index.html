@@ -1,32 +1,40 @@
 <html>
     <head>
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+        <meta content="utf-8" http-equiv="encoding">
         <script src="https://d3js.org/d3.v5.min.js"></script>
         <script src="scripts/papaparse.min.js"></script>
         <script src="scripts/functions.js"></script>
     </head>
     <body>
-        <div id="chart"> </div>
-        <a href="#" onmouseover="handleMouseover('2010')" id="link2010">2010</a>
-        <a href="#" onmouseover="handleMouseover('2011')" id="link2011">2011</a>
-        <a href="#" onmouseover="handleMouseover('2012')" id="link2012">2012</a>
-        <a href="#" onmouseover="handleMouseover('2013')" id="link2013">2013</a>
-        <a href="#" onmouseover="handleMouseover('2014')" id="link2014">2014</a>
-        <a href="#" onmouseover="handleMouseover('2015')" id="link2015">2015</a>
-        <a href="#" onmouseover="handleMouseover('2016')" id="link2016">2016</a>
-        <a href="#" onmouseover="handleMouseover('2017')" id="link2017">2017</a>
-        <a href="#" onmouseover="handleMouseover('2018')" id="link2018">2018</a>
+        <div style="width: 500px; margin: auto">
+            <div id="chart" style="margin: 0 auto; width: auto"></div>
+            <div style="margin: 15 0; display: block; width: auto; text-align: center;">
+                <a href="#" onmouseover="handleMouseover('2010')" id="link2010">2010</a>
+                <a href="#" onmouseover="handleMouseover('2011')" id="link2011">2011</a>
+                <a href="#" onmouseover="handleMouseover('2012')" id="link2012">2012</a>
+                <a href="#" onmouseover="handleMouseover('2013')" id="link2013">2013</a>
+                <a href="#" onmouseover="handleMouseover('2014')" id="link2014">2014</a>
+                <a href="#" onmouseover="handleMouseover('2015')" id="link2015">2015</a>
+                <a href="#" onmouseover="handleMouseover('2016')" id="link2016">2016</a>
+                <a href="#" onmouseover="handleMouseover('2017')" id="link2017">2017</a>
+                <a href="#" onmouseover="handleMouseover('2018')" id="link2018">2018</a> 
+            </div>
+        </div>
+
+
         <script>
             var loadedData;
             d3.text('data/ratingHistory.csv')
                 .then(text => d3.csvParse(text))
                 .then(fullData => {
                     loadedData = fullData;
-                    doHistogram(getDataForYear("2010"), "chart");
+                    doHistogram(getDataForYear("2010"), "chart", "Point Distribution for 2010");
                 });
 
             function handleMouseover(element){
                 document.getElementById("chart").innerHTML = "";
-                doHistogram(getDataForYear(element), "chart")
+                doHistogram(getDataForYear(element), "chart", "Point Distribution for " + element)
             }
 
             function getDataForYear(year){
